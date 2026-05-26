@@ -51,9 +51,9 @@ def seed_data():
     ]
 
     movies = [
-        Movie(title="Matrix", description="Sci-fi", duration=136),
-        Movie(title="Inception", description="Dreams", duration=148),
-        Movie(title="Interstellar", description="Space", duration=169),
+        Movie(title="Matrix", description="Матрица", duration=136),
+        Movie(title="Inception", description="Начало", duration=148),
+        Movie(title="Interstellar", description="Интерстеллар", duration=169),
     ]
 
     db.add(admin)
