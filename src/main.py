@@ -14,7 +14,6 @@ from src.api.movies import movie_router
 from src.api.bookings import booking_router
 from src.api.users import user_router
 
-
 from src.db_models.user import User
 from src.db_models.movie import Movie
 
@@ -22,18 +21,14 @@ from src.utils.show_tables import print_all_tables
 from sqlalchemy.orm import Session
 
 
-# ----------------------------
-# utils
-# ----------------------------
+# Надо в utils переложить
 def random_username(length: int = 6) -> str:
     return "user_" + "".join(
         random.choices(string.ascii_lowercase + string.digits, k=length)
     )
 
 
-# ----------------------------
-# seed DB
-# ----------------------------
+# Генерация данных
 
 def seed_data():
     db = Session(bind=engine)
@@ -64,7 +59,7 @@ def seed_data():
 
 
 # ----------------------------
-# LIFESPAN (startup logic)
+# LIFESPAN (логика при запуске)
 # ----------------------------
 @asynccontextmanager
 async def lifespan(app):
@@ -86,7 +81,7 @@ async def lifespan(app):
     print("\n[SHUTDOWN] Server stopped")
 
 # ----------------------------
-# FASTAPI APP
+# Сам фаст апи
 # ----------------------------
 app = FastAPI(
     title="Cinema Tickets API",
@@ -104,15 +99,14 @@ def clear_db():
     db.commit()
     db.close()
 
-# routers
+# Подключение роутеров
 app.include_router(auth_router)
 app.include_router(movie_router)
 app.include_router(booking_router)
 app.include_router(user_router)
 
-# ----------------------------
-# TEST ENDPOINTS
-# ----------------------------
+
+# Тестовые эндпоинты
 @app.get("/")
 def home():
     return {"message": "Cinema API works!"}
@@ -123,9 +117,7 @@ def health():
     return {"status": "ok"}
 
 
-# ----------------------------
-# RUN
-# ----------------------------
+# Запуск
 if __name__ == "__main__":
     uvicorn.run(
         "src.main:app",
