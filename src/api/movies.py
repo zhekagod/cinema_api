@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from src.db_models.booking import Booking
 from src.database import get_db
 from src.db_models.movie import Movie
 from src.schemas.movie import MovieCreate, MovieResponse
@@ -25,6 +26,11 @@ def get_movie(movie_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Movie not found")
 
     return movie
+
+
+@movie_router.get("/{movie_id}/bookings")
+def get_movie_bookings(movie_id: int, db: Session = Depends(get_db)):
+    return db.query(Booking).filter(Booking.movie_id == movie_id).all()
 
 
 @movie_router.post("/", response_model=MovieResponse)

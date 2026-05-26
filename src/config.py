@@ -1,4 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
+
 
 
 class Config(BaseSettings):
@@ -19,6 +21,7 @@ class Config(BaseSettings):
         )
 
     model_config = SettingsConfigDict(env_file=".env")
+    RESET_DB: bool = os.getenv("RESET_DB") == "1"
 
 
 config = Config()

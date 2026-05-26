@@ -3,10 +3,9 @@ from sqlalchemy.orm import Session
 
 from src.database import get_db
 from src.db_models.booking import Booking
-from src.schemas.booking import (
-    BookingCreate,
-    BookingResponse,
-)
+from src.schemas.booking import BookingCreate, BookingResponse
+from src.auth.dependencies import get_current_user
+from src.db_models.user import User
 
 
 booking_router = APIRouter(
@@ -16,16 +15,19 @@ booking_router = APIRouter(
 
 
 @booking_router.get("/", response_model=list[BookingResponse])
-def get_bookings(db: Session = Depends(get_db)):
-    return db.query(Booking).all()
+def get_bookings(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    return db.query(Booking).filter(Booking.user_id == user.id).all()
 
 
 @booking_router.post("/", response_model=BookingResponse)
 def create_booking(
     booking: BookingCreate,
     db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
 ):
-    # Проверка занятости места
     existing_booking = (
         db.query(Booking)
         .filter(
@@ -37,12 +39,10 @@ def create_booking(
     )
 
     if existing_booking:
-        raise HTTPException(
-            status_code=400,
-            detail="Seat already booked",
-        )
+        raise HTTPException(status_code=400, detail="Seat already booked")
 
     new_booking = Booking(**booking.model_dump())
+    new_booking.user_id = user.id   # ВАЖНО: берём из токена
 
     db.add(new_booking)
     db.commit()
@@ -50,23 +50,23 @@ def create_booking(
 
     return new_booking
 
-
 @booking_router.delete("/{booking_id}")
 def delete_booking(
     booking_id: int,
     db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
 ):
     booking = (
         db.query(Booking)
-        .filter(Booking.id == booking_id)
+        .filter(
+            Booking.id == booking_id,
+            Booking.user_id == user.id
+        )
         .first()
     )
 
     if not booking:
-        raise HTTPException(
-            status_code=404,
-            detail="Booking not found",
-        )
+        raise HTTPException(status_code=404, detail="Booking not found")
 
     db.delete(booking)
     db.commit()
