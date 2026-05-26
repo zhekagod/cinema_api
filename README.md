@@ -1,4 +1,4 @@
-# 🎬 Cinema Tickets API
+# Cinema Tickets API
 
 Backend-сервис для системы бронирования киносеансов, реализованный на FastAPI с использованием PostgreSQL и SQLAlchemy ORM.
 
@@ -6,7 +6,7 @@ Backend-сервис для системы бронирования киносе
 
 ---
 
-## ⚙️ Технологический стек
+## Технологический стек
 
 - Python 3.12+
 - FastAPI
